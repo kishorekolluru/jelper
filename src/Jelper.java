@@ -9,27 +9,27 @@ import java.util.Map;
 
 public class Jelper {
 
-	protected static StringBuilder gendCode = new StringBuilder();
-	protected static StringBuilder gendJdbcCode = new StringBuilder();
+	private static StringBuilder gendCode = new StringBuilder();
+	private static StringBuilder gendJdbcCode = new StringBuilder();
 	// Match Levels
-	protected static final String PERFECT_MATCH = "perfect";
-	protected static final String IGNORE_CASE_IND_WORDS = "ignore_case_for_individual_words";
+	private static final String PERFECT_MATCH = "perfect";
+	private static final String IGNORE_CASE_IND_WORDS = "ignore_case_for_individual_words";
 	// Punctuations
-	protected static final String PERIOD = ".";
-	protected static final String OPEN_PARAN = "(";
-	protected static final String CLOSED_PARAN = ")";
-	protected static final String PAIR_PARAN = "()";
-	protected static final String SEMI_COLON = ";";
-	protected static final String NEW_LINE = "\n";
-	protected static final char DOUBLE_QUOTE='"';
+	private static final String PERIOD = ".";
+	private static final String OPEN_PARAN = "(";
+	private static final String CLOSED_PARAN = ")";
+	private static final String PAIR_PARAN = "()";
+	private static final String SEMI_COLON = ";";
+	private static final String NEW_LINE = "\n";
+	private static final char DOUBLE_QUOTE='"';
 	// SET and GET
-	protected static final String SET = "SET";
-	protected static final String GET = "GET";
-	protected static final String TRY_MATCH_SHORTENED = "match_shortened";
-	protected static final String TRY_MATCH_SHORTENED_SHUFFLED = "match_shortened_shuffled";
-	protected static final String MATCH_REMAINING_TYPE = "remaining";
+	private static final String SET = "SET";
+	private static final String GET = "GET";
+	private static final String TRY_MATCH_SHORTENED = "match_shortened";
+	private static final String TRY_MATCH_SHORTENED_SHUFFLED = "match_shortened_shuffled";
+	private static final String MATCH_REMAINING_TYPE = "remaining";
 
-	protected static final Map<Class, Class> compatTypes = new HashMap<Class, Class>();
+	private static final Map<Class, Class> compatTypes = new HashMap<Class, Class>();
 	static{
 		compatTypes.put(int.class, BigDecimal.class);
 		compatTypes.put(BigDecimal.class, int.class);
@@ -162,10 +162,10 @@ public class Jelper {
 
 	private static void generateCode(List<Method> setClassMethods) {
 		// Set<String> stringSet= codeMap.keySet();
-		for (int i = 0; i < setClassMethods.size(); i++) {
-			if (codeMap.containsKey(setClassMethods.get(i))) {
-				genSetCode(setClassMethods.get(i),
-						codeMap.get(setClassMethods.get(i)));
+		for (Method setClassMethod : setClassMethods) {
+			if (codeMap.containsKey(setClassMethod)) {
+				genSetCode(setClassMethod,
+						codeMap.get(setClassMethod));
 			}
 		}
 	}
