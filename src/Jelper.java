@@ -12,24 +12,27 @@ public class Jelper {
 	private static StringBuilder gendCode = new StringBuilder();
 	private static StringBuilder gendJdbcCode = new StringBuilder();
 	// Match Levels
-	private static final String PERFECT_MATCH = "perfect";
-	private static final String IGNORE_CASE_IND_WORDS = "ignore_case_for_individual_words";
+	public static final int PERFECT_MATCH = 1;
+	public static final int IGNORE_CASE_IND_WORDS = 2;
+	public static final int TRY_MATCH_SHORTENED = 3;
+	public static final int TRY_MATCH_SHORTENED_SHUFFLED = 4;
+	public static final int MATCH_REMAINING_TYPE = 5;
 	// Punctuations
-	private static final String PERIOD = ".";
-	private static final String OPEN_PARAN = "(";
-	private static final String CLOSED_PARAN = ")";
-	private static final String PAIR_PARAN = "()";
-	private static final String SEMI_COLON = ";";
-	private static final String NEW_LINE = "\n";
-	private static final char DOUBLE_QUOTE='"';
+	protected static final String PERIOD = ".";
+	protected static final String OPEN_PARAN = "(";
+	protected static final String CLOSED_PARAN = ")";
+	protected static final String PAIR_PARAN = "()";
+	protected static final String SEMI_COLON = ";";
+	protected static final String NEW_LINE = "\n";
+	protected static final char DOUBLE_QUOTE='"';
 	// SET and GET
-	private static final String SET = "SET";
-	private static final String GET = "GET";
-	private static final String TRY_MATCH_SHORTENED = "match_shortened";
-	private static final String TRY_MATCH_SHORTENED_SHUFFLED = "match_shortened_shuffled";
-	private static final String MATCH_REMAINING_TYPE = "remaining";
+	protected static final String SET = "SET";
+	protected static final String GET = "GET";
 
-	private static final Map<Class, Class> compatTypes = new HashMap<Class, Class>();
+
+	protected static final Map<Class, Class> compatTypes = new HashMap<Class, Class>();
+	private static int matchLevel = 3;
+
 	static{
 		compatTypes.put(int.class, BigDecimal.class);
 		compatTypes.put(BigDecimal.class, int.class);
@@ -59,6 +62,10 @@ public class Jelper {
 		}
 		System.out.println(countGend +" setters generated of " + countWantd);
 		return gendJdbcCode.toString();
+	}
+
+	public static void setMatchLevel(int matchLvl){
+		matchLevel= matchLvl;
 	}
 	private static void matchGetterWithColumn(List<Method> setClassMethods,
 			List<String> columns) {
@@ -126,28 +133,13 @@ public class Jelper {
 					}
 				}
 			}
-			if (getClassMethods.size() != 0 && setClassMethods.size() != 0)// perfect
-																			// match
-				matchGetterToSetter(getClassMethods, setClassMethods,
-						PERFECT_MATCH);
-			if (getClassMethods.size() != 0 && setClassMethods.size() != 0) {
-				matchGetterToSetter(getClassMethods, setClassMethods,
-						IGNORE_CASE_IND_WORDS);
-			}
 
-			if (getClassMethods.size() != 0 && setClassMethods.size() != 0) {
-				matchGetterToSetter(getClassMethods, setClassMethods,
-						TRY_MATCH_SHORTENED);
+			for(int level=1; level<=matchLevel;++level){
+				if (getClassMethods.size() > 0 && setClassMethods.size() > 0) {
+					matchGetterToSetter(getClassMethods, setClassMethods,
+							level);
+				}
 			}
-			if (getClassMethods.size() != 0 && setClassMethods.size() != 0) {
-				matchGetterToSetter(getClassMethods, setClassMethods,
-						TRY_MATCH_SHORTENED_SHUFFLED);
-			}
-			if (getClassMethods.size() != 0 && setClassMethods.size() != 0) {
-				matchGetterToSetter(getClassMethods, setClassMethods,
-						MATCH_REMAINING_TYPE);
-			}
-
 			generateCode(setList);
 			//System.out.println("\nTook :" + (new Date().getTime() - start) + "ms");
 
@@ -172,12 +164,12 @@ public class Jelper {
 
 
 	private static void matchGetterToSetter(List<Method> getClassMethods,
-			List<Method> setClassMethods, String matchLevel) {
+											List<Method> setClassMethods, int matchLevel) {
 		String setName = null;
 		String getName = null;
 		String setType= null;
 		String getType= null;
-		if (PERFECT_MATCH.equalsIgnoreCase(matchLevel)) {
+		if (PERFECT_MATCH==matchLevel) {
 			for (int i = 0; i < setClassMethods.size(); i++) {
 				setType = setClassMethods.get(i).getParameterTypes()[0].getSimpleName();
 				setName = setClassMethods.get(i).getName().substring(3);
@@ -197,7 +189,7 @@ public class Jelper {
 				}
 			}
 
-		} else if (IGNORE_CASE_IND_WORDS.equalsIgnoreCase(matchLevel)) {
+		} else if (IGNORE_CASE_IND_WORDS==matchLevel) {
 
 			for (int i = 0; i < setClassMethods.size(); i++) {
 				setType = setClassMethods.get(i).getParameterTypes()[0].getSimpleName();
@@ -221,7 +213,7 @@ public class Jelper {
 			}
 
 		}
-		else if(TRY_MATCH_SHORTENED.equals(matchLevel)){
+		else if(TRY_MATCH_SHORTENED==matchLevel){
 			boolean flag=false;
 			List<String> setMethWords=null;
 			List<String> getMethWords=null;
@@ -247,7 +239,7 @@ public class Jelper {
 				}
 			}
 		}
-		else if(TRY_MATCH_SHORTENED_SHUFFLED.equals(matchLevel)){
+		else if(TRY_MATCH_SHORTENED_SHUFFLED==matchLevel){
 			boolean flag=false;
 			List<String> setMethWords=null;
 			List<String> getMethWords=null;
@@ -287,7 +279,7 @@ public class Jelper {
 				}
 			}
 		}
-		else if(MATCH_REMAINING_TYPE.equals(matchLevel)){
+		else if(MATCH_REMAINING_TYPE==matchLevel){
 			for( int i= 0 ; i<setClassMethods.size(); i++){
 				if( i < getClassMethods.size()){
 					if( setClassMethods.get(i).getParameterTypes()[0].equals(getClassMethods.get(i).getReturnType())){
