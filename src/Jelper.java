@@ -110,8 +110,10 @@ public class Jelper {
 		Class setClass = null;
 		//long start = new Date().getTime();
 		try {
+			//load the provided java classes
 			getClass = ClassLoader.getSystemClassLoader().loadClass(get);
 			setClass = ClassLoader.getSystemClassLoader().loadClass(set);
+			//extract the methods of both classes
 			List<Method> getClassMethods = JelperUtil.getClassMethods(getClass, GET);
 			List<Method> setClassInitMethods = JelperUtil.getClassMethods(setClass, SET);
 			List<Method> setClassMethods = new LinkedList<Method>();

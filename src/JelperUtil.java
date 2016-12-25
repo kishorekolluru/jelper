@@ -112,6 +112,7 @@ public class JelperUtil {
 			List<String> getMethWords) {
 		String setWord, getWord;
 		int count=0;
+		//try matching iff both methods have same number of words
 		if( setMethWords.size()==getMethWords.size()){
 			for( int i=0; i< setMethWords.size(); i++){
 				setWord= setMethWords.get(i);
@@ -143,15 +144,15 @@ public class JelperUtil {
 		}else{
 			shortStr=getWord;
 			longStr=setWord;
-		}		
+		}
 		int j=0;
-		
+
 		if(shortStr.length()< 2 || longStr.charAt(0)!=shortStr.charAt(0))//if the first letter not ewual then false straight away
 			return false;
-		
+
 		for( int i=0 ; i< shortStr.length() && j< longStr.length(); i++, j++){// to see if the letters in shortStr are occuring in longStr in order
 			if(! longStr.substring(j,j+1).equals(shortStr.substring(i,i+1))){
-				--i;
+				--i;//keep the short string pointer at the same place in next loop to wait for it to match in next iter
 			}
 			if( i== shortStr.length()-1)//if all the letters are in order
 				return true;
